@@ -1,5 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from "firebase/auth";
+import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase.config";
 import { ReactComponent as ArrowRightIcon } from "../assets/svg/keyboardArrowRightIcon.svg";
 import visibilityIcon from "../assets/svg/visibilityIcon.svg";
 
@@ -17,8 +26,38 @@ function SignUp() {
   const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
-      [e.target.id]: e.target.value
-    }))
+      [e.target.id]: e.target.value,
+    }));
+  };
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const auth = getAuth();
+
+      const userCtedential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const user = userCtedential.user;
+
+      updateProfile(auth.currentUser, {
+        displayName: name,
+      });
+
+      const formDataCopy = {...formData}
+      delete formDataCopy.password
+      formDataCopy.timestamp = serverTimestamp()
+
+      await setDoc(doc(db, 'users', user.uid), formDataCopy)
+
+      navigate("/");
+    } catch (error) {
+      toast.error('Something went wrong with registration');
+    }
   };
 
   return (
@@ -28,8 +67,8 @@ function SignUp() {
           <p className="pageHeader">Welcome Back!</p>
         </header>
 
-        <form>
-        <input
+        <form onSubmit={onSubmit}>
+          <input
             type="text"
             className="nameInput"
             placeholder="Name"
@@ -78,7 +117,7 @@ function SignUp() {
 
         {/* Google OAuth */}
 
-        <Link to='/sign-in' className="registerLink">
+        <Link to="/sign-in" className="registerLink">
           Sign In Instead
         </Link>
       </div>
