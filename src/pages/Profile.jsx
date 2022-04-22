@@ -60,7 +60,7 @@ function Profile() {
 
       <main>
         <div className="profileDetailsHeader">
-          <p className="profileDetailsText">Peronal Details</p>
+          <p className="profileDetailsText">Personal Details</p>
           <p
             className="changePersonalDetails"
             onClick={() => {
