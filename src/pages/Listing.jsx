@@ -56,7 +56,7 @@ function Listing() {
 
       <div className="listingDetails">
         <p className="listingName">
-          {listing.name} - $
+          {listing.name} - €
           {listing.offer
             ? listing.discountedPrice
                 .toString()
@@ -65,7 +65,39 @@ function Listing() {
                 .toString()
                 .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
         </p>
-        <p className="listingLocation"></p>
+        <p className="listingLocation">{listing.location}</p>
+        <p className="listingType">
+          For {listing.type === "rent" ? "Rent" : "Sale"}
+        </p>
+        {listing.offer && (
+          <p className="discountPrice">
+            € {listing.regularPrice - listing.discountedPrice} discount
+          </p>
+        )}
+        <ul className="listingDetailsList">
+          <li>
+            {listing.bedrooms > 1
+              ? `${listing.bedrooms} Bedrooms`
+              : "1 Bedroom"}
+          </li>
+          <li>
+            {listing.bathrooms > 1
+              ? `${listing.bathrooms} Bathrooms`
+              : "1 Bathroom"}
+          </li>
+          <li>{listing.parking && "Parking Spot"}</li>
+          <li>{listing.furnished && "Furnished"}</li>
+        </ul>
+        <p className="listingLocationTitle">Location</p>
+        {/* MAP */}
+        {auth.currentUser?.uid !== listing.userRef && (
+          <Link
+            to={`/contact/${listing.userRef}?listingName=${listing.name}`}
+            className="primaryButton"
+          >
+            Contact Landlord
+          </Link>
+        )}
       </div>
     </main>
   );
