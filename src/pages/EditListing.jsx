@@ -6,12 +6,7 @@ import {
   uploadBytesResumable,
   getDownloadURL,
 } from "firebase/storage";
-import {
-  doc,
-  updateDoc,
-  getDoc,
-  serverTimestamp,
-} from "firebase/firestore";
+import { doc, updateDoc, getDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase.config";
 import { useNavigate, useParams } from "react-router-dom";
 import Spinner from "../components/Spinner";
@@ -62,25 +57,25 @@ function EditListing() {
 
   // Redirect if listing is not user's
   useEffect(() => {
-      if (listing && listing.userRef !== auth.currentUser.uid) {
-          toast.error('You can not edit that listing')
-          navigate('/')
-      }
-  })
+    if (listing && listing.userRef !== auth.currentUser.uid) {
+      toast.error("You can not edit that listing");
+      navigate("/");
+    }
+  });
 
   // Fetch listing to edit
   useEffect(() => {
     setLoading(true);
     const fetchListing = async () => {
       const docRef = doc(db, "listings", params.listingId);
-      const docSnap = await getDoc(docRef)
+      const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-          setListing(docSnap.data())
-          setFormData({...docSnap.data(), address: docSnap.data().location})
-          setLoading(false)
+        setListing(docSnap.data());
+        setFormData({ ...docSnap.data(), address: docSnap.data().location });
+        setLoading(false);
       } else {
-          navigate('/')
-          toast.error('Listing does not exist')
+        navigate("/");
+        toast.error("Listing does not exist");
       }
     };
 
@@ -173,6 +168,8 @@ function EditListing() {
               case "running":
                 console.log("Upload is running");
                 break;
+              default:
+                break;
             }
           },
           (error) => {
@@ -210,8 +207,8 @@ function EditListing() {
     !formDataCopy.offer && delete formDataCopy.discountedPrice;
 
     // Update listing
-    const docRef = doc(db, 'listings', params.listingId);
-    await updateDoc(docRef, formDataCopy)
+    const docRef = doc(db, "listings", params.listingId);
+    await updateDoc(docRef, formDataCopy);
     setLoading(false);
     toast.success("Listing saved");
     navigate(`/category/${formDataCopy.type}/${docRef.id}`);
